@@ -1,0 +1,247 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --border-color: #dddddd;
+    --border-radius: 8px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+/* Responsive Image Style */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: calc(var(--border-radius) / 2);
+    object-fit: cover;
+}
+
+/* Button Styling */
+button, .btn {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover, .btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* SECTION 1: NAVBAR */
+.navbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #000000;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+/* SECTION 2: HEADER HERO */
+.header-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+.header-content h1 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #111827;
+}
+
+.header-content p {
+    margin-bottom: 20px;
+    color: #4b5563;
+}
+
+/* SECTION 3: BIODATA GRID */
+.biodata-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    font-size: 1.75rem;
+    color: #111827;
+}
+
+.section-title p {
+    color: #6b7280;
+}
+
+.biodata-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.bio-box {
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    text-align: center;
+    border-radius: var(--border-radius);
+    background-color: #fafafa;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* SECTION 4: PORTOFOLIO GRID */
+.portfolio-section {
+    margin-bottom: 20px;
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.portfolio-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    text-align: center;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.portfolio-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.portfolio-card strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.portfolio-card small {
+    color: #6b7280;
+}
+
+/* =================================================== */
+/* MEDIA QUERIES (DESKTOP, TABLET, MOBILE RESPONSIVE) */
+/* =================================================== */
+
+/* Tampilan Tablet (Layar <= 900px) */
+@media screen and (max-width: 900px) {
+    .biodata-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 kolom di tablet */
+    }
+
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 kolom di tablet */
+    }
+}
+
+/* Tampilan Mobile (Layar <= 600px) */
+@media screen and (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .wrapper {
+        padding: 15px;
+    }
+
+    /* Navbar berubah menjadi vertikal di HP */
+    .navbar {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .nav-links {
+        justify-content: center;
+        gap: 12px;
+        font-size: 0.95rem;
+    }
+
+    /* Header bertumpuk (teks di atas, gambar di bawah) */
+    .header-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .header-image{
+        order: -1;
+    }
+
+    /* Biodata & Portfolio menjadi 1 kolom penuh di HP */
+    .biodata-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+    }
+}
