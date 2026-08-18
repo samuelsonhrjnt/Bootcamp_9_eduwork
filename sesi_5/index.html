@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple E-commerce</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .product-card {
+            transition: transform 0.2s ease, shadow 0.2s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        .product-image {
+            height: 180px;
+            object-fit: cover;
+            border-top-left-radius: border-radius;
+            border-top-right-radius: border-radius;
+        }
+        .description-text {
+            display: -webkit-box;
+            /* -webkit-line-clamp: 2; */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fa-solid fa-shop text-warning me-2"></i>Simple E-commerce
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Filter Section -->
+        <div class="card p-3 mb-4 shadow-sm border-0 rounded-3">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchInput" class="form-label small fw-bold text-muted">Cari Nama Produk</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Ketik nama produk...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="categoryFilter" class="form-label small fw-bold text-muted">Kategori</label>
+                    <select id="categoryFilter" class="form-select">
+                        <option value="">Semua Kategori</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Books">Books</option>
+                        <option value="Home">Home</option>
+                        <option value="Sports">Sports</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="priceFilter" class="form-label small fw-bold text-muted">Maksimal Harga ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted">$</span>
+                        <input type="number" id="priceFilter" class="form-control" placeholder="Contoh: 500" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Summary Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Daftar Produk</h5>
+            <span class="badge bg-secondary" id="productCounter">Menampilkan 0 produk</span>
+        </div>
+
+        <!-- Products Section Grid -->
+        <div class="row g-3" id="productContainer"></div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="text-center py-5 d-none">
+            <i class="fa-solid fa-box-open fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted">Tidak ada produk yang sesuai dengan filter Anda.</h5>
+            <p class="text-muted small">Coba ubah kata kunci pencarian atau rentang harga.</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Dataset produk dan gambar yang disesuaikan secara spesifik per kategori
+        const categoryData = {
+            Electronics: [
+                { name: "Smartphone Flagship", price: 699, desc: "Smartphone layar AMOLED dengan kamera jernih.", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&auto=format&fit=crop&q=80" },
+                { name: "Laptop Ultra Slim", price: 899, desc: "Laptop tipis performa tinggi untuk kerja dan desain.", img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&auto=format&fit=crop&q=80" },
+                { name: "Headphone Wireless", price: 120, desc: "Headphone noise-cancelling suara bass mantap.", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80" },
+                { name: "Smartwatch Sport", price: 150, desc: "Jam tangan pintar dengan pelacak detak jantung dan GPS.", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&auto=format&fit=crop&q=80" },
+                { name: "Kamera Mirrorless 4K", price: 750, desc: "Kamera fotografi profesional dengan rekam video 4K.", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&auto=format&fit=crop&q=80" },
+                { name: "Speaker Bluetooth Portable", price: 45, desc: "Speaker nirkabel tahan air dengan suara jernih.", img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400&auto=format&fit=crop&q=80" },
+                { name: "Tablet Drawing Pro", price: 350, desc: "Tablet grafis sensitivitas tinggi untuk ilustrator.", img: "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&auto=format&fit=crop&q=80" },
+                { name: "Keyboard Mekanikal RGB", price: 85, desc: "Keyboard gaming responsif dengan tombol RGB.", img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&auto=format&fit=crop&q=80" },
+                { name: "Mouse Gaming Wireless", price: 40, desc: "Mouse ergonomis DPI tinggi untuk efisiensi.", img: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&auto=format&fit=crop&q=80" },
+                { name: "Powerbank Quick Charge", price: 30, desc: "Pengisi daya portabel kapasitas 20.000 mAh.", img: "https://images.unsplash.com/photo-1609592424109-dd9892f1b177?w=400&auto=format&fit=crop&q=80" }
+            ],
+            Clothing: [
+                { name: "Kaos Polos Premium", price: 15, desc: "Kaos katun bambu adem dan nyaman dipakai.", img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&auto=format&fit=crop&q=80" },
+                { name: "Jaket Denim Casual", price: 55, desc: "Jaket jeans bergaya maskulin dan tahan lama.", img: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&auto=format&fit=crop&q=80" },
+                { name: "Sepatu Sneaker Red", price: 75, desc: "Sneaker kasual cocok untuk kegiatan harian.", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80" },
+                { name: "Celana Jeans Slim Fit", price: 45, desc: "Celana jeans potongan modern bahan fleksibel.", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&auto=format&fit=crop&q=80" },
+                { name: "Hoodie Warm Fleece", price: 38, desc: "Sweater hoodie hangat dengan saku depan.", img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&auto=format&fit=crop&q=80" },
+                { name: "Kemeja Flannel Motif", price: 32, desc: "Kemeja flanel bahan tebal dan stylish.", img: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&auto=format&fit=crop&q=80" },
+                { name: "Topi Baseball Casual", price: 12, desc: "Topi pelindung sinar matahari desain modern.", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&auto=format&fit=crop&q=80" },
+                { name: "Kacamata Hitam UV", price: 25, desc: "Kacamata gaya dengan filter perlindungan UV400.", img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&auto=format&fit=crop&q=80" },
+                { name: "Tas Ransel Backpack", price: 40, desc: "Backpack muat laptop dan perlengkapan harian.", img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&auto=format&fit=crop&q=80" },
+                { name: "Sandal Casual Leather", price: 28, desc: "Sandal kulit sintetis nyaman dan empuk.", img: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=400&auto=format&fit=crop&q=80" }
+            ],
+            Books: [
+                { name: "Buku Novel Fiksi Best Seller", price: 14, desc: "Kisah petualangan dan misteri mendalam.", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Pengembangan Diri", price: 18, desc: "Panduan praktis membangun kebiasaan produktif.", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Pemrograman JS", price: 28, desc: "Panduan lengkap belajar JavaScript modern.", img: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Bisnis & Investasi", price: 22, desc: "Strategi mengelola keuangan dan bisnis.", img: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Sains & Alam", price: 20, desc: "Eksplorasi fenomena alam dan rahasia alam semesta.", img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&auto=format&fit=crop&q=80" },
+                { name: "Komik Ilustrasi Seni", price: 12, desc: "Kumpulan cerita bergambar grafis tinggi.", img: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Resep Kuliner", price: 16, desc: "Kumpulan resep masakan enak dan sehat.", img: "https://images.unsplash.com/photo-1495440683480-bd730fc0f217?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Sejarah Dunia", price: 25, desc: "Rangkuman peristiwa penting dalam peradaban.", img: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400&auto=format&fit=crop&q=80" },
+                { name: "Jurnal & Notebook Hardcover", price: 8, desc: "Buku catatan kertas tebal premium.", img: "https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&auto=format&fit=crop&q=80" },
+                { name: "Buku Desain Grafis", price: 30, desc: "Prinsip dasar komposisi warna dan tata letak.", img: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&auto=format&fit=crop&q=80" }
+            ],
+            Home: [
+                { name: "Tanaman Hias Indoor", price: 15, desc: "Tanaman hias dalam pot penyegar ruangan.", img: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&auto=format&fit=crop&q=80" },
+                { name: "Lampu Meja Minimalis", price: 28, desc: "Lampu hangat cocok untuk meja kerja dan tidur.", img: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&auto=format&fit=crop&q=80" },
+                { name: "Kursi Santai Wood", price: 120, desc: "Kursi kayu ergonomis dengan busa empuk.", img: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&auto=format&fit=crop&q=80" },
+                { name: "Cangkir Keramik Aesthetic", price: 10, desc: "Mug keramik buatan tangan untuk teh dan kopi.", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&auto=format&fit=crop&q=80" },
+                { name: "Jam Dinding Kayu", price: 22, desc: "Jam dinding desain simpel dekorasi ruangan.", img: "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=400&auto=format&fit=crop&q=80" },
+                { name: "Vas Bunga Kaca", price: 18, desc: "Vas bunga hias elegan untuk meja tamu.", img: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=400&auto=format&fit=crop&q=80" },
+                { name: "Bantal Sofa Empuk", price: 14, desc: "Bantal lembut dengan sarung motif estetik.", img: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400&auto=format&fit=crop&q=80" },
+                { name: "Diffuser Aromaterapi", price: 35, desc: "Pelembab udara dengan pencahayaan LED.", img: "https://images.unsplash.com/photo-1602928321679-560b4139c901?w=400&auto=format&fit=crop&q=80" },
+                { name: "Rak Dinding Kayu", price: 25, desc: "Rak gantung pajangan foto dan hiasan.", img: "https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?w=400&auto=format&fit=crop&q=80" },
+                { name: "Karpet Bulu Soft", price: 60, desc: "Karpet lantai lembut untuk ruang keluarga.", img: "https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=400&auto=format&fit=crop&q=80" }
+            ],
+            Sports: [
+                { name: "Bola Basket Outdoor", price: 25, desc: "Bola basket karet tahan gesekan di lapangan.", img: "https://images.unsplash.com/photo-1519861531473-9200262188bf?w=400&auto=format&fit=crop&q=80" },
+                { name: "Sepatu Lari Running", price: 85, desc: "Sepatu lari ringan penyerap benturan kaki.", img: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&auto=format&fit=crop&q=80" },
+                { name: "Dumbbell Set 10kg", price: 48, desc: "Beban besi berlapis karet untuk latihan lengan.", img: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=80" },
+                { name: "Matras Yoga Anti Selip", price: 20, desc: "Matras fleksibel nyaman untuk workout dan yoga.", img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&auto=format&fit=crop&q=80" },
+                { name: "Sepeda Gunung MTB", price: 320, desc: "Sepeda lintas alam dengan rem cakram ganda.", img: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&auto=format&fit=crop&q=80" },
+                { name: "Botol Minum Olahraga", price: 12, desc: "Botol stainless steel penahan suhu dingin.", img: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400&auto=format&fit=crop&q=80" },
+                { name: "Tali Skipping Speed", price: 8, desc: "Jump rope bantalan lahar melatih kardio.", img: "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=400&auto=format&fit=crop&q=80" },
+                { name: "Karet Resistance Band", price: 10, desc: "Pita elastis latihan kekuatan otot tubuh.", img: "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=400&auto=format&fit=crop&q=80" },
+                { name: "Raket Bulutangkis Pro", price: 55, desc: "Raket ringan karbon dengan tarikan senar kencang.", img: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&auto=format&fit=crop&q=80" },
+                { name: "Sarung Tangan Fitness", price: 14, desc: "Sarung pelindung telapak tangan angkat beban.", img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&auto=format&fit=crop&q=80" }
+            ]
+        };
+
+        // Membuat total 50 data produk secara otomatis (10 item per kategori)
+        const categories = ["Electronics", "Clothing", "Books", "Home", "Sports"];
+        const products = [];
+        let idCounter = 1;
+
+        categories.forEach(cat => {
+            const items = categoryData[cat];
+            items.forEach((item, idx) => {
+                products.push({
+                    id: idCounter,
+                    name: `${item.name} ${idx > 0 ? '#' + (idx + 1) : ''}`.trim(),
+                    price: item.price,
+                    description: item.desc,
+                    category: cat,
+                    image: item.img
+                });
+                idCounter++;
+            });
+        });
+
+        // Fungsi untuk menampilkan produk ke HTML
+        function displayProducts(filteredProducts) {
+            const productContainer = document.getElementById('productContainer');
+            const emptyState = document.getElementById('emptyState');
+            const productCounter = document.getElementById('productCounter');
+
+            productContainer.innerHTML = '';
+            productCounter.textContent = `Menampilkan ${filteredProducts.length} produk`;
+
+            if (filteredProducts.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            }
+            emptyState.classList.add('d-none');
+
+            filteredProducts.forEach(product => {
+                const productCard = `
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-card-wrapper">
+                        <div class="card h-100 product-card border-0 shadow-sm">
+                            <img src="${product.image}" 
+                                 class="card-img-top product-image" 
+                                 alt="${product.name}"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/300x200/e9ecef/495057?text=Gambar+Produk';">
+                            <div class="card-body d-flex flex-column p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">${product.category}</span>
+                                    <span class="fw-bold text-success fs-6">$${product.price}</span>
+                                </div>
+                                <h6 class="card-title fw-bold text-truncate mb-1" title="${product.name}">${product.name}</h6>
+                                <p class="card-text text-muted description-text flex-grow-1 mb-0">${product.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                productContainer.innerHTML += productCard;
+            });
+        }
+
+        // Fungsi filter terpadu (mengkombinasikan pencarian nama, kategori, dan harga)
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            const maxPrice = parseFloat(document.getElementById('priceFilter').value);
+
+            const filteredProducts = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
+                const matchesPrice = isNaN(maxPrice) || product.price <= maxPrice;
+
+                return matchesSearch && matchesCategory && matchesPrice;
+            });
+
+            displayProducts(filteredProducts);
+        }
+
+        // Event Listeners untuk semua input filter
+        document.getElementById('searchInput').addEventListener('input', filterProducts);
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('priceFilter').addEventListener('input', filterProducts);
+
+        // Tampilkan semua produk saat halaman pertama kali dimuat
+        filterProducts();
+    </script>
+</body>
+</html>
