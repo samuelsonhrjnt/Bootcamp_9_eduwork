@@ -1,14 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/products', function () {
-    return view('products');
-});
+Route::get('contoh', [App\Http\Controllers\ContohController::class, 'index']);
+
+Route::get('/products', [App\Http\Controllers\ProductController::class, 'index']);
 
 Route::get('cart', function () {
     echo 'Cart page';
