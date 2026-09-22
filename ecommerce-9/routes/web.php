@@ -1,83 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 
-Route::get('/', [HomeController::class, 'index']);
+// 1. Halaman Utama (Homepage / Landing Page SHOP.CO)
+Route::get('/', function () {
+    return view('home');
+})->name('home');
 
-Route::get('contoh', [App\Http\Controllers\ContohController::class, 'index']);
+// 2. Daftar Produk (New Arrivals / Catalog)
+Route::get('/products', function () {
+    $products = [
+        ['name' => 'T-shirt with Tape Details', 'price' => 120, 'rating' => '4.5/5', 'category' => 'Casual'],
+        ['name' => 'Skinny Fit Jeans', 'price' => 240, 'rating' => '3.5/5', 'category' => 'Casual'],
+        ['name' => 'Checkered Shirt', 'price' => 180, 'rating' => '4.5/5', 'category' => 'Formal'],
+        ['name' => 'Sleeve Striped T-shirt', 'price' => 130, 'rating' => '4.5/5', 'category' => 'Casual']
+    ];
+    return view('products', compact('products'));
+})->name('products.index');
 
-Route::get('/products', [App\Http\Controllers\ProductController::class, 'index']);
-
-Route::get('cart', function () {
-    echo 'Cart page';
-});
-
-Route::get('checkout', function () {
-    echo 'Checkout page';
-});
-
-Route::get('/about', function () {
-    return view('about');
-});
-
-
-Route::get('/contact', function () {
-    return view('contact');
-});
-
-//post
-Route::post('/contact', function () {
-    // Handle the form submission
-    return redirect('/contact')->with('success', 'Thank you for contacting us!');
-});
-
-//put
-Route::put('/contact', function () {
-    // Handle the form submission
-    return redirect('/contact')->with('success', 'Thank you for contacting us!');
-});
-
-//patch
-Route::patch('/contact', function () {
-    // Handle the form submission
-    return redirect('/contact')->with('success', 'Thank you for contacting us!');
-});
-
-//delete
-Route::delete('/contact', function () {
-    // Handle the form submission
-    return redirect('/contact')->with('success', 'Thank you for contacting us!');
-});
-
-Route::prefix('contact')->group(function () {
-    Route::get('/', function () {
-        return view('contact');
-    });
-
-    Route::post('/', function () {
-        // Handle the form submission
-        return redirect('/contact')->with('success', 'Thank you for contacting us!');
-    });
-
-    Route::put('/', function () {
-        // Handle the form submission
-        return redirect('/contact')->with('success', 'Thank you for contacting us!');
-    });
-
-    Route::patch('/', function () {
-        // Handle the form submission
-        return redirect('/contact')->with('success', 'Thank you for contacting us!');
-    });
-
-    Route::delete('/', function () {
-        // Handle the form submission
-        return redirect('/contact')->with('success', 'Thank you for contacting us!');
-    });
-});
-
-Route::middleware('throttle:5,1')->group(function () {
-    Route::get('/products', function () {
-        echo 'Product page';
-    });
-});
+// 3. Halaman Keranjang Belanja
+Route::get('/cart', function () {
+    return view('cart');
+})->name('cart.index');
